@@ -145,7 +145,7 @@ export function CartMenu() {
             <div className="space-y-1 py-3 border-b mb-3">
               <div className="flex items-center justify-between text-sm">
                 <h2 className="font-medium">Total</h2>
-                <p>${totalSum.toFixed(2)}</p>
+                <p>{formatNumber(totalSum*83.60)}</p>
               </div>
             </div>
           </div>
