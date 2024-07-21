@@ -100,7 +100,7 @@ export function CartMenu() {
               Shopping Cart ({cartItems.length})
             </h2>
           </SheetHeader>
-          {/* CONTENT HWRE */}
+          {/* CONTENT HERE */}
           <div className="">
             {cartItems.map((item, i) => {
               return (
@@ -149,7 +149,7 @@ export function CartMenu() {
               </div>
             </div>
           </div>
-          <SheetFooter>
+          <SheetFooter className="mb-10" >
             {
               !loading && 
               <SheetClose asChild>
@@ -168,7 +168,10 @@ export function CartMenu() {
                 <span>Processing..</span>
               </Button>
             }
+
           </SheetFooter>
+          <strong className="mt-11" >Test Card : 4000 0035 6000 0008</strong>
+          
         </SheetContent>
       ) : (
         <SheetContent className="w-[400px] sm:w-[540px]">

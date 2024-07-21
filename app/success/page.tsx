@@ -4,7 +4,7 @@ import { removeAllProductsFromCart } from "@/store/slices/cartSlice";
 import React, { useEffect } from "react";
 
  
-export default function page() {
+export default function Page() {
   const dispatch=useAppDispatch();
   useEffect(()=>{
     dispatch(removeAllProductsFromCart());
