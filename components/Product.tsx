@@ -10,6 +10,7 @@ import {
   removeProductFromCart,
 } from "@/store/slices/cartSlice";
 import toast from "react-hot-toast";
+import { formatNumber } from "@/lib/utils";
 
 export default function Product({ product }: { product: IProduct }) {
   const [existing, setExisting] = useState(false);
@@ -45,7 +46,7 @@ export default function Product({ product }: { product: IProduct }) {
       <h2 className="font-semibold line-clamp-1">{product.title}</h2>
       <p className="line-clamp-2 text-xs">{product.description}</p>
       <div className="flex items-center justify-between py-2">
-        <p className="text-blue-600 text-sm font-medium">${product.price}</p>
+        <p className="text-blue-600 text-sm font-medium">{formatNumber(Math.floor(product.price*83.60))}</p>
         <Button variant={"outline"} size={"sm"} className="">
           {product.stock} items
         </Button>

@@ -11,11 +11,13 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { formatNumber } from "@/lib/utils";
 import { useAppDispatch, useAppSelector } from "@/store/hooks/hooks";
-import { removeProductFromCart } from "@/store/slices/cartSlice";
+import { decrementQty, incrementQty, removeProductFromCart } from "@/store/slices/cartSlice";
 import {
   Headset,
   HelpCircle,
+  Loader2,
   LogOut,
   Mail,
   MessageSquareMore,
@@ -31,11 +33,14 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
+
 
 export function CartMenu() {
-  const cartItems = useAppSelector((state) => state.cart.cartItems);
-  console.log(cartItems);
   const dispatch = useAppDispatch();
+  const cartItems = useAppSelector((state) => state.cart.cartItems);
+  const [loading, setLoading] = useState(false);
+  // console.log(cartItems);
   function handleRemove(id: number) {
     dispatch(removeProductFromCart(id));
   }
@@ -43,6 +48,40 @@ export function CartMenu() {
     (sum, item) => sum + item.price * item.qty,
     0
   );
+
+  async function checkout(){
+    try {
+      setLoading(true);
+      console.log("CartItems: " + cartItems)
+      const baseUrl=process.env.NEXT_PUBLIC_URL as string;
+      const options = {
+      method: 'POST', // Specify the request method as POST
+      headers: {
+        'Content-Type': 'application/json', // Set the content type to JSON
+      },
+      body: JSON.stringify({products:cartItems}), // Convert the data to a JSON string
+    };
+
+    // Make the POST request using fetch and await the response
+    const response = await fetch(`${baseUrl}/api/checkout`, options);
+
+    if(response){
+      const data=await response.json();
+      if(data?.url){
+        const checkoutUrl=data.url;
+        window.location.href=checkoutUrl;
+      }
+      setLoading(false);
+      // console.log(response);
+    }
+
+    } catch (error) {
+      console.log(error);
+      setLoading(false);
+    }
+  }
+
+    
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -87,14 +126,14 @@ export function CartMenu() {
                     </button>
                   </div>
                   <div className="space-y-2">
-                    <h2 className="text-sx">${item.price}</h2>
+                    <h2 className="text-sx">{formatNumber(Math.floor(item.price*83.60))}</h2>
                     <div className="flex items-center space-x-3">
-                      <button className="border shadow rounded flex items-center justify-center w-10 h-7">
+                        <button className="border shadow rounded flex items-center justify-center w-10 h-7" onClick={()=>{dispatch(decrementQty(item.id))}}>
                         <Minus className="w-4 h-4" />
                       </button>
 
-                      <p>1</p>
-                      <button className="border shadow rounded flex items-center justify-center w-10 h-7 bg-slate-800 text-white">
+                      <p>{item.qty}</p>
+                      <button className="border shadow rounded flex items-center justify-center w-10 h-7 bg-slate-800 text-white" onClick={()=>{dispatch(incrementQty(item.id))}}>
                         <Plus className="w-4 h-4" />
                       </button>
                     </div>
@@ -111,16 +150,24 @@ export function CartMenu() {
             </div>
           </div>
           <SheetFooter>
-            <SheetClose asChild>
-              <Button variant={"outline"} type="submit">
-                Continue Shopping
-              </Button>
-            </SheetClose>
-            <Button asChild>
-              <Link href="/checkout">
+            {
+              !loading && 
+              <SheetClose asChild>
+                <Button variant={"outline"} type="submit">
+                  Continue Shopping
+                </Button>
+              </SheetClose>
+            }
+            {
+              !loading?
+              <Button onClick={checkout}>
                 <span>Proceed to Checkout</span>
-              </Link>
-            </Button>
+              </Button>:
+              <Button disabled>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin"/>
+                <span>Processing..</span>
+              </Button>
+            }
           </SheetFooter>
         </SheetContent>
       ) : (
